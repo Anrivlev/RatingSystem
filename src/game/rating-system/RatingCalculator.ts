@@ -4,10 +4,10 @@ export class RatingCalculator {
     public static getScores<T>(
         ratingLists: RatingList<T>[],
         actualList: RatingList<T>,
-    ): Map<string, number> {
+    ): Map<RatingList<T>, number> {
         return new Map(
             ratingLists.map((ratingList) => [
-                ratingList.name,
+                ratingList,
                 this.getScore(ratingList, actualList),
             ]),
         );
@@ -26,7 +26,7 @@ export class RatingCalculator {
         return score;
     }
 
-    private static getScoreOfItem<T>(
+    public static getScoreOfItem<T>(
         appearedItems: Set<T>,
         item: T,
         ratingList: RatingList<T>,

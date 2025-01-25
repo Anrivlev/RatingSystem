@@ -1,45 +1,93 @@
-import { RatingList } from "./rating-system/RatingList";
 import { TePyatero } from "./TePyatero";
-import { RatingCalculator } from "./rating-system/RatingCalculator";
+import { RatingCalculator } from "./game/rating-system/RatingCalculator";
+import { Player } from "./game/player/Player";
 
-const ratingLists: RatingList<TePyatero>[] = [
+const players: Player[] = [
     {
         name: "Гоша",
-        items: ["Тимофей", "Илья", "Анри", "Олег", "Гоша"],
+        id: 0,
+        ratingList: {
+            items: [
+                TePyatero.Timothy,
+                TePyatero.Ilya,
+                TePyatero.Anri,
+                TePyatero.Oleg,
+                TePyatero.Gosha,
+            ],
+        },
     },
     {
         name: "Илья",
-        items: ["Олег", "Илья", "Анри", "Тимофей", "Гоша"],
+        id: 1,
+        ratingList: {
+            items: [
+                TePyatero.Oleg,
+                TePyatero.Ilya,
+                TePyatero.Anri,
+                TePyatero.Timothy,
+                TePyatero.Gosha,
+            ],
+        },
     },
     {
         name: "Олег",
-        items: ["Тимофей", "Илья", "Гоша", "Олег", "Анри"],
+        id: 2,
+        ratingList: {
+            items: [
+                TePyatero.Timothy,
+                TePyatero.Ilya,
+                TePyatero.Gosha,
+                TePyatero.Oleg,
+                TePyatero.Anri,
+            ],
+        },
     },
     {
         name: "Тимофей",
-        items: ["Олег", "Анри", "Тимофей", "Илья", "Гоша"],
+        id: 3,
+        ratingList: {
+            items: [
+                TePyatero.Oleg,
+                TePyatero.Anri,
+                TePyatero.Timothy,
+                TePyatero.Ilya,
+                TePyatero.Gosha,
+            ],
+        },
     },
     {
         name: "Анри",
-        items: ["Гоша", "Олег", "Илья", "Тимофей", "Анри"],
+        id: 4,
+        ratingList: {
+            items: [
+                TePyatero.Gosha,
+                TePyatero.Oleg,
+                TePyatero.Ilya,
+                TePyatero.Timothy,
+                TePyatero.Anri,
+            ],
+        },
     },
 ];
 let finalString = "";
-ratingLists.forEach((actualList) => {
-    const startString = `Если ${actualList.name} угадал всех верно:`;
+players.forEach((player) => {
+    const startString = `Если ${player.name} угадал всех верно:`;
     finalString += startString;
-    finalString += '\n';
+    finalString += "\n";
     console.log(startString);
-    const scores = RatingCalculator.getScores(ratingLists, actualList);
+    const scores = RatingCalculator.getScores(
+        players.map((player) => player.ratingList),
+        player.ratingList,
+    );
     const scoresSorted = Array.from(scores.entries()).sort(
         (a, b) => b[1] - a[1],
     );
-   const  scoresSortedString = scoresSorted
+    const scoresSortedString = scoresSorted
         .map((scoreWithName) => `${scoreWithName[0]}: ${scoreWithName[1]}`)
         .join("\n");
     finalString += scoresSortedString;
-    finalString += '\n';
-    finalString += '\n';
+    finalString += "\n";
+    finalString += "\n";
     console.log(scoresSortedString);
 });
 

@@ -40,3 +40,5 @@ npm run build
   3. Илюха
   4. Тимофей
   5. Анри
+
+  У ScoreTree разделить build и addPlayer();
