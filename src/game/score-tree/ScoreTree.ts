@@ -6,26 +6,107 @@ import { RatingCalculator } from "../rating-system/RatingCalculator";
 export class ScoreTree {
     private root: ScoreTreeNode;
 
+    private items: RatingItem[];
+
     constructor() {}
 
-    public build(players: Player[], items: RatingItem[]): void {
-        this.buildRoot(players, items);
+    public build(items: RatingItem[]): void {
+        this.items = items;
+        this.buildRoot(items);
     }
 
-    public addPlayer(player: Player, items: RatingItem[]): void {
-        this.root.playerIdToScore.set(player.id, 0);
+    public addPlayers(players: Player[]): void {
+        players.forEach((player) => {
+            this.root.playerIdToScore.set(player.id, 0);
+        });
         const appearedItems = new Set<RatingItem>();
-        items.forEach((nodeItem) => {
+        const scores = new Array(players.length).fill(0);
+        this.items.forEach((nodeItem) => {
             const childNode = this.root.children.get(nodeItem.id);
             if (!childNode)
                 throw new Error(`Не найден узел для предмета  ${nodeItem.id}`);
-            this.addPlayerScoreToNode(
+
+            const remainingItems = this.items.filter(
+                (item) => item !== nodeItem,
+            );
+
+            this.addPlayersToNode(
+                players,
+                childNode,
+                nodeItem,
+                scores,
+                appearedItems,
+                remainingItems,
+            );
+        });
+    }
+
+    public addPlayersToNode(
+        players: Player[],
+        node: ScoreTreeNode,
+        nodeItem: RatingItem,
+        scores: number[],
+        appearedItems: Set<RatingItem>,
+        remainingItems: RatingItem[],
+    ): void {
+        const nodeScores = players.map(
+            (player, index) =>
+                scores[index] +
+                RatingCalculator.getScoreOfItem(
+                    appearedItems,
+                    nodeItem,
+                    player.ratingList,
+                ),
+        );
+
+        players.forEach((player, index) => {
+            node.playerIdToScore.set(player.id, nodeScores[index]);
+        });
+
+        const nodeAppearedItems = new Set(appearedItems);
+        nodeAppearedItems.add(nodeItem);
+
+        remainingItems.forEach((remainingItem) => {
+            const childNode = node.children.get(remainingItem.id);
+            if (!childNode)
+                throw new Error(
+                    `Не найден узел для предмета  ${remainingItem.id}`,
+                );
+
+            const nextNodeRemainingItems = remainingItems.filter(
+                (item) => item != remainingItem,
+            );
+
+            this.addPlayersToNode(
+                players,
+                childNode,
+                remainingItem,
+                nodeScores,
+                nodeAppearedItems,
+                nextNodeRemainingItems,
+            );
+        });
+    }
+
+    public addPlayer(player: Player): void {
+        this.root.playerIdToScore.set(player.id, 0);
+        const appearedItems = new Set<RatingItem>();
+        this.items.forEach((nodeItem) => {
+            const childNode = this.root.children.get(nodeItem.id);
+            if (!childNode)
+                throw new Error(`Не найден узел для предмета  ${nodeItem.id}`);
+
+            const remainingItems = this.items.filter(
+                (item) => item !== nodeItem,
+            );
+
+            this.addPlayerToNode(
                 player,
                 childNode,
                 nodeItem,
                 0,
                 appearedItems,
-                items,
+                remainingItems,
             );
         });
     }
@@ -35,7 +116,7 @@ export class ScoreTree {
         this.removePlayerFromNode(playerId, this.root);
     }
 
-    private addPlayerScoreToNode(
+    private addPlayerToNode(
         player: Player,
         node: ScoreTreeNode,
         nodeItem: RatingItem,
@@ -67,7 +148,7 @@ export class ScoreTree {
                 (item) => item != remainingItem,
             );
 
-            this.addPlayerScoreToNode(
+            this.addPlayerToNode(
                 player,
                 childNode,
                 remainingItem,
@@ -85,82 +166,40 @@ export class ScoreTree {
         );
     }
 
-    private buildRoot(players: Player[], items: RatingItem[]): void {
+    private buildRoot(items: RatingItem[]): void {
         this.root = {
             playerIdToScore: new Map(),
             children: new Map(),
         };
-        players.forEach((player) =>
-            this.root.playerIdToScore.set(player.id, 0),
-        );
-        const scores = new Array(players.length).fill(0);
-        this.buildChildren(this.root, players, scores, new Set(), items);
+        this.buildChildren(this.root, items);
     }
 
     private buildChildren(
         parent: ScoreTreeNode,
-        players: Player[],
-        scores: number[],
-        appearedItems: Set<RatingItem>,
         remainingItems: RatingItem[],
     ): void {
         if (!parent.children) parent.children = new Map();
         remainingItems.forEach((remainigItem) => {
-            const nextNodeAppearedItems = new Set(appearedItems);
-            nextNodeAppearedItems.add(remainigItem);
             const nextNodeRemainingItems = remainingItems.filter(
                 (item) => item != remainigItem,
             );
 
-            const nextNode = this.buildNextNode(
-                players,
-                scores,
-                nextNodeAppearedItems,
-                remainigItem,
-                nextNodeRemainingItems,
-                parent,
-            );
+            const nextNode = this.buildNextNode(nextNodeRemainingItems, parent);
             parent.children.set(remainigItem.id, nextNode);
         });
     }
 
     private buildNextNode(
-        players: Player[],
-        scores: number[],
-        appearedItems: Set<RatingItem>,
-        nodeItem: RatingItem,
         remainingItems: RatingItem[],
         parent: ScoreTreeNode,
     ): ScoreTreeNode {
-        const nodeScores = scores.map((score, index) => {
-            const player = players[index];
-            return (
-                score +
-                RatingCalculator.getScoreOfItem(
-                    appearedItems,
-                    nodeItem,
-                    player.ratingList,
-                )
-            );
-        });
         const playerIdToScore = new Map<number, number>();
-        players.forEach((player, index) => {
-            playerIdToScore.set(player.id, nodeScores[index]);
-        });
         const node = {
             parent,
             playerIdToScore,
             children: new Map(),
         };
-        const nodeAppearedItems = new Set(appearedItems);
-        nodeAppearedItems.add(nodeItem);
-        this.buildChildren(
-            node,
-            players,
-            nodeScores,
-            nodeAppearedItems,
-            remainingItems,
-        );
+        this.buildChildren(node, remainingItems);
         return node;
     }
 }

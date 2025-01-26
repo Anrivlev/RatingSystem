@@ -103,5 +103,6 @@ players.forEach((player) => {
 console.log(finalString);
 
 const scoreTree = new ScoreTree();
-scoreTree.build(players, items);
+scoreTree.build(items);
+scoreTree.addPlayers(players);
 console.log(scoreTree);
