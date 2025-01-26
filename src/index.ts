@@ -1,6 +1,15 @@
 import { TePyatero } from "./TePyatero";
 import { RatingCalculator } from "./game/rating-system/RatingCalculator";
 import { Player } from "./game/player/Player";
+import { ScoreTree } from './game/score-tree/ScoreTree';
+
+const items = [
+    TePyatero.Anri,
+    TePyatero.Gosha,
+    TePyatero.Ilya,
+    TePyatero.Oleg,
+    TePyatero.Timothy,
+];
 
 const players: Player[] = [
     {
@@ -92,3 +101,7 @@ players.forEach((player) => {
 });
 
 console.log(finalString);
+
+const scoreTree = new ScoreTree();
+scoreTree.build(players, items);
+console.log(scoreTree);
