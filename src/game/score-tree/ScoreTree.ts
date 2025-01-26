@@ -41,7 +41,7 @@ export class ScoreTree {
         });
     }
 
-    public addPlayersToNode(
+    private addPlayersToNode(
         players: Player[],
         node: ScoreTreeNode,
         nodeItem: RatingItem,
