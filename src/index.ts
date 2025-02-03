@@ -2,6 +2,12 @@ import { TePyatero } from "./TePyatero";
 import { RatingCalculator } from "./game/rating-system/RatingCalculator";
 import { Player } from "./game/player/Player";
 import { ScoreTree } from "./game/score-tree/ScoreTree";
+import { RatingGame } from "./game/RatingGame";
+
+const containerDiv = document.createElement("div");
+document.body.appendChild(containerDiv);
+const ratingGame = new RatingGame();
+ratingGame.init(containerDiv);
 
 const items = [
     TePyatero.Anri,

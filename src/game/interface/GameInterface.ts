@@ -8,6 +8,8 @@ export class GameInterface {
 
     private containerDiv: HTMLDivElement;
 
+    private interfaceDiv;
+
     private mainMenu: MainMenu;
 
     private ratingListCreationMenu: RatingListCreationMenu;
@@ -16,6 +18,7 @@ export class GameInterface {
 
     constructor(game: RatingGame) {
         this.game = game;
+        this.interfaceDiv = document.createElement('div');
 
         this.mainMenu = new MainMenu();
         this.ratingListCreationMenu = new RatingListCreationMenu();
