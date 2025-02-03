@@ -1,7 +1,7 @@
 import { TePyatero } from "./TePyatero";
 import { RatingCalculator } from "./game/rating-system/RatingCalculator";
 import { Player } from "./game/player/Player";
-import { ScoreTree } from './game/score-tree/ScoreTree';
+import { ScoreTree } from "./game/score-tree/ScoreTree";
 
 const items = [
     TePyatero.Anri,

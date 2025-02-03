@@ -1,3 +1,1 @@
-export class PlayerHelper {
-    
-}
+export class PlayerHelper {}

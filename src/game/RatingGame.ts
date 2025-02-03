@@ -1,12 +1,17 @@
-import { GameStateManager } from './state/GameStateManager';
+import { GameInterface } from "./interface/GameInterface";
+import { GameStateManager } from "./state/GameStateManager";
 export class RatingGame {
-    private gameStateManager: GameStateManager;
+    private stateManager: GameStateManager;
+
+    private interface: GameInterface;
 
     constructor() {
-        this.gameStateManager = new GameStateManager();
+        this.stateManager = new GameStateManager();
+        this.interface = new GameInterface(this);
     }
 
-    public init(): void {
-        this.gameStateManager.init();
+    public init(containerDiv: HTMLDivElement): void {
+        this.stateManager.init();
+        this.interface.init(containerDiv);
     }
 }
