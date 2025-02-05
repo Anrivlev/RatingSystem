@@ -9,5 +9,11 @@ export class MainMenu {
 
     public init(containerDiv: HTMLDivElement): void {
         this.containerDiv = containerDiv;
+
+        this.initMainMenuDiv();
+    }
+
+    private initMainMenuDiv(): void {
+        this.containerDiv.appendChild(this.mainMenuDiv);
     }
 }
